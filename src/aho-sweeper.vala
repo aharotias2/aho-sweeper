@@ -15,6 +15,14 @@
  */
 
 namespace Aho {
+    public const string RULE_DESCRIPTION = "ルール\n"
+        + "マインスイーパのルールは非常に単純です。"
+        + "ボードはセルに分割され、地雷はランダムに分散されています。"
+        + "勝つには、すべてのセルを開く必要があります。"
+        + "セルの数字は、それに隣接する地雷の数を示しています。"
+        + "この情報を使用して、安全なセルと地雷を含むセルを判別できます。"
+        + "地雷であると疑われる細胞は、マウスの右ボタンを使用してフラグでマークすることができます。";
+        
     public const string[] LETTERS = { "0", "1", "2", "3", "4", "5", "6", "7", "8" };
 
     public enum ModelSize {
@@ -79,6 +87,7 @@ namespace Aho {
     public struct Cell {
         public bool has_bomb;
         public bool is_closed;
+        public bool is_fixed;
         public int number;
     }
 
@@ -109,6 +118,7 @@ namespace Aho {
                 for (int i = 0; i < x_length; i++) {
                     cells[j, i].is_closed = true;
                     cells[j, i].has_bomb = false;
+                    cells[j, i].is_fixed = false;
                     cells[j, i].number = 0;
                 }
             }
@@ -138,6 +148,18 @@ namespace Aho {
             return cells[y, x].has_bomb;
         }
 
+        public bool is_fixed(int y, int x) {
+            return cells[y, x].is_fixed;
+        }
+        
+        public void fix(int y, int x) {
+            cells[y, x].is_fixed = true;
+        }
+        
+        public void unfix(int y, int x) {
+            cells[y, x].is_fixed = false;
+        }
+        
         public bool open_cell(int y, int x) {
             if (!is_playing) {
                 generate_game(y, x);
@@ -160,52 +182,52 @@ namespace Aho {
             Random.set_seed((uint32) new DateTime.now_local().to_unix());
             for (int j = 0; j < y_length_value; j++) {
                 for (int i = 0; i < x_length_value; i++) {
-                    bool flag = false;
+                    bool is_safe = false;
                     if (y > 0 && x > 0) {
                         if (j == y - 1 && i == x - 1) {
-                            flag = true;
+                            is_safe = true;
                         }
                     }
                     if (y > 0) {
                         if (j == y - 1 && i == x) {
-                            flag = true;
+                            is_safe = true;
                         }
                     }
                     if (y > 0 && x + 1 < x_length) {
                         if (j == y - 1 && i == x + 1) {
-                            flag = true;
+                            is_safe = true;
                         }
                     }
                     if (x > 0) {
                         if (j == y && i == x - 1) {
-                            flag = true;
+                            is_safe = true;
                         }
                     }
                     if (j == y && i == x) {
-                        flag = true;
+                        is_safe = true;
                     }
                     if (x + 1 < x_length) {
                         if (j == y && i == x + 1) {
-                            flag = true;
+                            is_safe = true;
                         }
                     }
                     if (y + 1 < y_length && x > 0) {
                         if (j == y + 1 && i == x - 1) {
-                            flag = true;
+                            is_safe = true;
                         }
                     }
                     if (y + 1 < y_length) {
                         if (j == y + 1 && i == x) {
-                            flag = true;
+                            is_safe = true;
                         }
                     }
                     if (y + 1 < y_length && x + 1 < x_length) {
                         if (j == y + 1 && i == x + 1) {
-                            flag = true;
+                            is_safe = true;
                         }
                     }
 
-                    if (flag) {
+                    if (is_safe) {
                         cells[j, i].has_bomb = false;
                     } else {
                         cells[j, i].has_bomb = Random.int_range(0, appearance_rate) == 0;
@@ -331,14 +353,21 @@ namespace Aho {
         private const int cell_width = 20;
         private const double font_size = 12.0;
         private const int border_width = 1;
-        private const Gdk.RGBA border_color = { 0.4, 0.4, 0.4, 1.0 };
+        private const int BEZEL_WIDTH = 2;
+        private const Gdk.RGBA border_color = { 0.6, 0.6, 0.6, 1.0 };
         private const Gdk.RGBA closed_cell_color = { 0.9, 0.9, 0.9, 1.0 };
-        private const Gdk.RGBA opened_cell_color = { 0.6, 0.6, 0.6, 1.0 };
+        private const Gdk.RGBA opened_cell_color = { 0.7, 0.7, 0.7, 1.0 };
         private const Gdk.RGBA hovered_cell_color = { 0.9, 0.9, 0.5, 1.0 };
         private const Gdk.RGBA selected_cell_color = { 1.0, 0.5, 0.2, 1.0 };
-        private const Gdk.RGBA text_color = { 0.1, 0.1, 0.1, 1.0 };
         private const Gdk.RGBA bomb_color = { 0.0, 0.0, 0.0, 1.0 };
         private const Gdk.RGBA mask_color = { 0.0, 0.0, 0.0, 1.0 };
+        private const Gdk.RGBA TEXT_COLOR_1 = { 0.1, 0.1, 0.9, 1.0 };
+        private const Gdk.RGBA TEXT_COLOR_2 = { 0.1, 0.5, 0.0, 1.0 };
+        private const Gdk.RGBA TEXT_COLOR_3 = { 0.3, 0.3, 0.0, 1.0 };
+        private const Gdk.RGBA TEXT_COLOR_4 = { 0.5, 0.5, 0.1, 1.0 };
+        private const Gdk.RGBA TEXT_COLOR_5 = { 0.5, 0.5, 0.1, 1.0 };
+        private const Gdk.RGBA TEXT_COLOR_6 = { 0.9, 0.1, 0.1, 1.0 };
+        private const Gdk.RGBA TEXT_COLOR_7 = { 0.9, 0.1, 0.1, 1.0 };
         private Cairo.Rectangle[,] rects;
         private Gdk.Point selected_cell;
         private Gdk.Point hovered_cell;
@@ -418,40 +447,136 @@ namespace Aho {
             cairo.fill();
             for (int y = 0; y < model.y_length; y++) {
                 for (int x = 0; x < model.x_length; x++) {
+                    Gdk.RGBA fill_color = { 0.0, 0.0, 0.0, 0.0 };
+                    
                     if (model.is_closed(y, x)) {
                         if (x == selected_cell.x && y == selected_cell.y) {
-                            cairo.set_source_rgb(
-                                selected_cell_color.red,
-                                selected_cell_color.green,
-                                selected_cell_color.blue
-                            );
-                        } else if (x == hovered_cell.x && y == hovered_cell.y) {
-                            cairo.set_source_rgb(
-                                hovered_cell_color.red,
-                                hovered_cell_color.green,
-                                hovered_cell_color.blue
-                            );
+                            fill_color = selected_cell_color;
+                       } else if (x == hovered_cell.x && y == hovered_cell.y) {
+                            fill_color = hovered_cell_color;
                         } else {
-                            cairo.set_source_rgb(
-                                closed_cell_color.red,
-                                closed_cell_color.green,
-                                closed_cell_color.blue
-                            );
+                            fill_color = closed_cell_color;
                         }
-                    } else {
+
+                        double center_x = rects[y, x].x + rects[y, x].width / 2;
+                        double center_y = rects[y, x].y + rects[y, x].height / 2;
+                        double top_left_x = rects[y, x].x;
+                        double top_left_y = rects[y, x].y;
+                        double top_right_x = rects[y, x].x + rects[y, x].width;
+                        double top_right_y = rects[y, x].y;
+                        double bottom_left_x = rects[y, x].x;
+                        double bottom_left_y = rects[y, x].y + rects[y, x].height;
+                        double bottom_right_x = rects[y, x].x + rects[y, x].width;
+                        double bottom_right_y = rects[y, x].y + rects[y, x].height;
                         cairo.set_source_rgb(
-                            opened_cell_color.red,
-                            opened_cell_color.green,
-                            opened_cell_color.green
+                            fill_color.red / 3,
+                            fill_color.green / 3,
+                            fill_color.blue  / 3
                         );
+                        cairo.move_to(
+                            center_x,
+                            center_y
+                        );
+                        cairo.line_to(
+                            bottom_left_x,
+                            bottom_left_y
+                        );
+                        cairo.line_to(
+                            bottom_right_x,
+                            bottom_right_y
+                        );
+                        cairo.fill();
+
+                        cairo.set_source_rgb(
+                            fill_color.red / 2,
+                            fill_color.green / 2,
+                            fill_color.blue / 2
+                        );
+                        cairo.move_to(
+                            center_x,
+                            center_y
+                        );
+                        cairo.line_to(
+                            top_right_x,
+                            top_right_y
+                        );
+                        cairo.line_to(
+                            bottom_right_x,
+                            bottom_right_y
+                        );
+                        cairo.fill();
+
+                        cairo.set_source_rgb(
+                            fill_color.red * 1.2,
+                            fill_color.green * 1.2,
+                            fill_color.blue * 1.2
+                        );
+                        cairo.move_to(
+                            center_x,
+                            center_y
+                        );
+                        cairo.line_to(
+                            top_left_x,
+                            top_left_y
+                        );
+                        cairo.line_to(
+                            bottom_left_x,
+                            bottom_left_y
+                        );
+                        cairo.fill();
+
+                        cairo.set_source_rgb(
+                            fill_color.red * 1.5,
+                            fill_color.green * 1.5,
+                            fill_color.blue * 1.5
+                        );
+                        cairo.move_to(
+                            center_x,
+                            center_y
+                        );
+                        cairo.line_to(
+                            top_left_x,
+                            top_left_y
+                        );
+                        cairo.line_to(
+                            top_right_x,
+                            top_right_y
+                        );
+                        cairo.fill();
+
+                        cairo.set_source_rgb(
+                            fill_color.red,
+                            fill_color.green,
+                            fill_color.blue
+                        );
+
+                        cairo.rectangle(
+                            rects[y, x].x + BEZEL_WIDTH,
+                            rects[y, x].y + BEZEL_WIDTH,
+                            cell_width - BEZEL_WIDTH * 2,
+                            cell_width - BEZEL_WIDTH * 2
+                        );
+                        cairo.fill();
+
+                    } else {
+                        fill_color = opened_cell_color;
+
+                        cairo.set_source_rgb(
+                            fill_color.red,
+                            fill_color.green,
+                            fill_color.blue
+                        );
+
+                        cairo.rectangle(
+                            rects[y, x].x,
+                            rects[y, x].y,
+                            cell_width,
+                            cell_width
+                        );
+                        cairo.fill();
                     }
-                    cairo.rectangle(
-                        rects[y, x].x,
-                        rects[y, x].y,
-                        cell_width,
-                        cell_width
-                    );
-                    cairo.fill();
+
+
                     if (!model.is_closed(y, x)) {
                         if (model.has_bomb(y, x)) {
                             cairo.set_source_rgb(bomb_color.red, bomb_color.green, bomb_color.blue);
@@ -459,19 +584,88 @@ namespace Aho {
                             double bomb_y = rects[y, x].y + cell_width / 2;
                             cairo.arc(bomb_x, bomb_y, cell_width / 4, 0.0, 2.0 * Math.PI);
                             cairo.fill();
-                        } else if (model.get_number(y, x) > 0) {
-                            cairo.select_font_face("Sans", NORMAL, NORMAL);
-                            cairo.set_font_size(font_size);
-                            cairo.set_source_rgb(text_color.red, text_color.green, text_color.blue);
-                            string number_text = LETTERS[model.get_number(y, x)];
-                            cairo.text_extents(number_text, out extents);
-                            double text_x = (cell_width / 2) - (extents.width / 2 + extents.x_bearing);
-                            double text_y = (cell_width / 2) - (extents.height / 2 + extents.y_bearing);
+                        } else {
+                            int number = model.get_number(y, x);
+                            if (number > 0) {
+                                cairo.select_font_face("Sans", NORMAL, BOLD);
+                                cairo.set_font_size(font_size);
+                                Gdk.RGBA text_color = TEXT_COLOR_1;
+                                switch (number) {
+                                  case 1:
+                                    text_color = TEXT_COLOR_1;
+                                    break;
+                                  case 2:
+                                    text_color = TEXT_COLOR_2;
+                                    break;
+                                  case 3:
+                                    text_color = TEXT_COLOR_3;
+                                    break;
+                                  case 4:
+                                    text_color = TEXT_COLOR_4;
+                                    break;
+                                  case 5:
+                                    text_color = TEXT_COLOR_5;
+                                    break;
+                                  case 6:
+                                    text_color = TEXT_COLOR_6;
+                                    break;
+                                  case 7:
+                                    text_color = TEXT_COLOR_7;
+                                    break;
+                                }
+                                cairo.set_source_rgb(text_color.red, text_color.green, text_color.blue);
+                                string number_text = LETTERS[model.get_number(y, x)];
+                                cairo.text_extents(number_text, out extents);
+                                double text_x = (cell_width / 2) - (extents.width / 2 + extents.x_bearing);
+                                double text_y = (cell_width / 2) - (extents.height / 2 + extents.y_bearing);
+                                cairo.move_to(
+                                    rects[y, x].x + text_x,
+                                    rects[y, x].y + text_y
+                                );
+                                cairo.show_text(number_text);
+                            }
+                        }
+                    } else {
+                        if (model.is_fixed(y, x)) {
+                            double width = rects[y, x].width;
+                            double pole_start_x = width / 4;
+                            double pole_start_y = width / 5 * 1;
+                            double pole_end_x = width / 4;
+                            double pole_end_y = width / 5 * 4;
+                            double flag_top_x = width / 4;
+                            double flag_top_y = width / 5 * 1;
+                            double flag_middle_x = width / 4 * 3;
+                            double flag_middle_y = width / 5 * 2;
+                            double flag_bottom_x = width / 4;
+                            double flag_bottom_y = width / 5 * 3    ;
+                            
+                            cairo.set_line_width(0.0);
+                            cairo.set_source_rgb(0.9, 0.1, 0.1);
                             cairo.move_to(
-                                rects[y, x].x + text_x,
-                                rects[y, x].y + text_y
+                                rects[y, x].x + flag_top_x,
+                                rects[y, x].y + flag_top_y
                             );
-                            cairo.show_text(number_text);
+                            cairo.line_to(
+                                rects[y, x].x + flag_middle_x,
+                                rects[y, x].y + flag_middle_y
+                            );
+                            cairo.line_to(
+                                rects[y, x].x + flag_bottom_x,
+                                rects[y, x].y + flag_bottom_y
+                            );
+                            cairo.fill();
+
+                            cairo.set_source_rgb(0.1, 0.1, 0.1);
+                            cairo.set_line_width(2.0);
+                            cairo.move_to(
+                                rects[y, x].x + pole_start_x,
+                                rects[y, x].y + pole_start_y
+                            );
+                            cairo.line_to(
+                                rects[y, x].x + pole_end_x,
+                                rects[y, x].y + pole_end_y
+                            );
+                            cairo.stroke();
                         }
                     }
                 }
@@ -492,19 +686,29 @@ namespace Aho {
         public override bool button_press_event(Gdk.EventButton event) {
             int cell_x, cell_y;
             cursor_index((int) event.x, (int) event.y, out cell_x, out cell_y);
-            if (cell_x < 0 || cell_y < 0) {
-                selected_cell.x = -1;
-                selected_cell.y = -1;
-            } else if (selected_cell.x == cell_x && selected_cell.y == cell_y) {
-                selected_cell.x = -1;
-                selected_cell.y = -1;
+            if (event.button == 3) {
+                if (!model.is_fixed(cell_y, cell_x)) {
+                    model.fix(cell_y, cell_x);
+                } else {
+                    model.unfix(cell_y, cell_x);
+                }
+            } else if (!model.is_fixed(cell_y, cell_x)) {
+                if (cell_x < 0 || cell_y < 0) {
+                    selected_cell.x = -1;
+                    selected_cell.y = -1;
+                } else if (selected_cell.x == cell_x && selected_cell.y == cell_y) {
+                    selected_cell.x = -1;
+                    selected_cell.y = -1;
+                } else {
+                    selected_cell.x = cell_x;
+                    selected_cell.y = cell_y;
+                }
+                model.open_cell(cell_y, cell_x);
             } else {
-                selected_cell.x = cell_x;
-                selected_cell.y = cell_y;
+                return false;
             }
-            model.open_cell(cell_y, cell_x);
             queue_draw();
-            return false;
+            return true;
         }
 
         public override bool button_release_event(Gdk.EventButton event) {
@@ -528,7 +732,7 @@ namespace Aho {
                 hovered_cell.y = cell_y;
             }
             queue_draw();
-            return false;
+            return true;
         }
         
         private void cursor_index(int cursor_x, int cursor_y, out int cell_x, out int cell_y) {
@@ -578,9 +782,11 @@ int main(string[] argv) {
                             size_selector.append(size.to_string(), size.to_string());
                         }
                         size_selector.changed.connect(() => {
-                            var size = Aho.ModelSize.from_string(size_selector.active_id);
-                            sweeper.bind_model(new Aho.SweeperModel(size));
-                            sweeper.is_paused = false;
+                            if (sweeper != null) {
+                                var size = Aho.ModelSize.from_string(size_selector.active_id);
+                                sweeper.bind_model(new Aho.SweeperModel(size));
+                                sweeper.is_paused = false;
+                            }
                         });
                         size_selector.active_id = "16x16";
                     }
@@ -597,10 +803,21 @@ int main(string[] argv) {
                         });
                     }
                     
+                    var rule_button = new Gtk.Button.from_icon_name("help-browser");
+                    {
+                        rule_button.clicked.connect(() => {
+                            var dialog = new Gtk.MessageDialog(
+                                    window, MODAL, INFO, OK, Aho.RULE_DESCRIPTION);
+                            dialog.run();
+                            dialog.close();
+                        });
+                    }
+                    
                     time_label = new Gtk.Label(time_to_string(playing_time));
                     
                     box_2.pack_start(size_selector, false, false);
                     box_2.pack_start(reset_button, false, false);
+                    box_2.pack_start(rule_button, false, false);
                     box_2.pack_end(time_label, false, false);
                 }
                 

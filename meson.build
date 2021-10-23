@@ -1,7 +1,7 @@
 project('com.github.aharotias2.aho-sweeper', 'vala', 'c', version: '0.0.1')
 
 executable(
-  'com.github.aharotias2.aho-sweeper',
+  meson.project_name(),
   files(
     'src/aho-sweeper.vala'
   ),
@@ -13,3 +13,7 @@ executable(
   install_dir: get_option('prefix') / 'bin'
 )
 
+install_data(
+  ['etc/@0@.desktop'.format(meson.project_name())],
+  install_dir: get_option('prefix') / 'share/applications'
+)

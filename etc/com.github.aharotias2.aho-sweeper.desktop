@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Aho Sweeper
+Type=Application
+Categories=Game;
+Exec=com.github.aharotias2.aho-sweeper
+Icon=com.github.aharotias2.aho-sweeper
+Terminal=false
