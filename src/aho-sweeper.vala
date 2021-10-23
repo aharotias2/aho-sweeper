@@ -353,10 +353,10 @@ namespace Aho {
         private const int cell_width = 20;
         private const double font_size = 12.0;
         private const int border_width = 1;
-        private const int BEZEL_WIDTH = 2;
+        private const double BEZEL_WIDTH = 1;
         private const Gdk.RGBA border_color = { 0.6, 0.6, 0.6, 1.0 };
-        private const Gdk.RGBA closed_cell_color = { 0.9, 0.9, 0.9, 1.0 };
-        private const Gdk.RGBA opened_cell_color = { 0.7, 0.7, 0.7, 1.0 };
+        private const Gdk.RGBA closed_cell_color = { 0.95, 0.95, 0.95, 1.0 };
+        private const Gdk.RGBA opened_cell_color = { 0.75, 0.75, 0.75, 1.0 };
         private const Gdk.RGBA hovered_cell_color = { 0.9, 0.9, 0.5, 1.0 };
         private const Gdk.RGBA selected_cell_color = { 1.0, 0.5, 0.2, 1.0 };
         private const Gdk.RGBA bomb_color = { 0.0, 0.0, 0.0, 1.0 };
@@ -469,9 +469,9 @@ namespace Aho {
                         double bottom_right_x = rects[y, x].x + rects[y, x].width;
                         double bottom_right_y = rects[y, x].y + rects[y, x].height;
                         cairo.set_source_rgb(
-                            fill_color.red / 3,
-                            fill_color.green / 3,
-                            fill_color.blue  / 3
+                            fill_color.red * 0.5,
+                            fill_color.green * 0.5,
+                            fill_color.blue * 0.5
                         );
                         cairo.move_to(
                             center_x,
@@ -488,9 +488,9 @@ namespace Aho {
                         cairo.fill();
 
                         cairo.set_source_rgb(
-                            fill_color.red / 2,
-                            fill_color.green / 2,
-                            fill_color.blue / 2
+                            fill_color.red * 0.75,
+                            fill_color.green * 0.75,
+                            fill_color.blue * 0.75
                         );
                         cairo.move_to(
                             center_x,
@@ -507,9 +507,9 @@ namespace Aho {
                         cairo.fill();
 
                         cairo.set_source_rgb(
-                            fill_color.red * 1.2,
-                            fill_color.green * 1.2,
-                            fill_color.blue * 1.2
+                            fill_color.red * 1.25,
+                            fill_color.green * 1.25,
+                            fill_color.blue * 1.25
                         );
                         cairo.move_to(
                             center_x,
@@ -544,11 +544,28 @@ namespace Aho {
                         );
                         cairo.fill();
 
-                        cairo.set_source_rgb(
+                        var cell_pattern = new Cairo.Pattern.linear(
+                            rects[y, x].x + BEZEL_WIDTH,
+                            rects[y, x].y + BEZEL_WIDTH,
+                            rects[y, x].x + cell_width - BEZEL_WIDTH * 2,
+                            rects[y, x].y + cell_width - BEZEL_WIDTH * 2
+                        );
+                        
+                        cell_pattern.add_color_stop_rgb(
+                            0,
                             fill_color.red,
                             fill_color.green,
                             fill_color.blue
                         );
+                        
+                        cell_pattern.add_color_stop_rgb(
+                            rects[y, x].width,
+                            fill_color.red * 0.9,
+                            fill_color.green * 0.9,
+                            fill_color.blue * 0.9
+                        );
+                        
+                        cairo.set_source(cell_pattern);
 
                         cairo.rectangle(
                             rects[y, x].x + BEZEL_WIDTH,
@@ -556,6 +573,7 @@ namespace Aho {
                             cell_width - BEZEL_WIDTH * 2,
                             cell_width - BEZEL_WIDTH * 2
                         );
+
                         cairo.fill();
 
                     } else {
