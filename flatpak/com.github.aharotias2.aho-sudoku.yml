@@ -1,0 +1,17 @@
+app-id: com.github.aharotias2.aho-sweeper
+runtime: org.gnome.Platform
+runtime-version: '41'
+sdk: org.gnome.Sdk
+command: com.github.aharotias2.aho-sweeper
+finish-args:
+  - '--socket=session-bus'
+  - '--socket=wayland'
+  - '--socket=fallback-x11'
+modules:
+  - name: com.github.aharotias2.aho-sweeper
+    buildsystem: meson
+    sources:
+      - type: git
+        url: https://github.com/aharotias2/aho-sweeper.git
+        branch: main
+        
