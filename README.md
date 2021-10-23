@@ -27,6 +27,18 @@ Aho-Sweeper
        $ sudo ninja install
 
 
+### コンパイル済みファイルをダウンロードする
+以下のGoogleドライブのリンクからコンパイル済み実行ファイルをダウンロードできます。
+
+<https://drive.google.com/file/d/1skdtgHI0yT-lY6pimElt39Kpfa4aLp3x/view?usp=sharing>
+
+
+MD5SUM: 488b31c9bfd5ecaccf676550aea65132
+SHA256SUM: 86be9fdb954594ab3b811cba47a26ef92d07a722c8f3564414cb5ed3df8c32d4
+
+実行権限を与えた上、おそらくアイコンをクリックしても実行できないので残年ですがコマンドラインから実行
+してください。
+
 ----------------------------------------------------------------------------------------------------
 
 Copyright (c) 2021 田中喬之
