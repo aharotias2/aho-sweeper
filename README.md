@@ -78,7 +78,7 @@ flatpakとflatpak-builderをインストールしたら下記のコマンドで�
 
 ### Flatpakによる実行
 
-    $ flatpak run com.github.aharotias2.aho-sweeper.yml
+    $ flatpak run com.github.aharotias2.aho-sweeper
 
 または、アプリケーションメニューの「ゲーム」から選択してもできるはずです。
 
