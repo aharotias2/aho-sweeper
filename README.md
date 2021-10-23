@@ -57,6 +57,25 @@ SHA256SUM: 57d5dd115b5559aaeece77bb1d8209030e800c8a3ba4b4cf8fad69ced8e32b99
 実行権限を与えた上、おそらくアイコンをクリックしても実行できないので残念ですがコマンドラインから実行
 してください。
 
+### Flatpakでインストールする
+
+Flatpakのマニフェストファイルも同梱したのでそちらを使ってもインストールできます。
+ランタイムはorg.gnome.Platform/41とorg.gnome.Sdk/41で動作確認済みです。
+
+### ランタイムのインストール方法
+各ディストリビューションで指定された方法でflatpakとflatpak-builderをインストールしてください。
+flatpakとflatpak-builderをインストールしたら下記のコマンドでランタイムをインストールします。
+
+    $ flatpak remote-add flathub https://flathub.org/repo/flathub.flatpakrepo
+	$ flatpak install flathub org.gnome.Platform
+	$ flatpak install flathub org.gnome.Sdk
+
+### FlatpakによるAho-Sweeperのインストール方法
+このGitリポジトリの基底ディレクトリで実行してください。
+
+	$ cd ./flatpak
+	$ flatpak-builder --install --user --force-clean build com.github.aharotias2.aho-sweeper.yml
+
 ----------------------------------------------------------------------------------------------------
 
 Copyright (c) 2021 田中喬之
