@@ -51,8 +51,8 @@ Aho-Sweeper
 
 <https://drive.google.com/file/d/16VJxWSyXc9MBuM29tx2-cEvAm51hDg48/view?usp=sharing>
 
-MD5SUM: 6727c039760eb82900fdd4698f66e6ca
-SHA256SUM: 57d5dd115b5559aaeece77bb1d8209030e800c8a3ba4b4cf8fad69ced8e32b99
+* MD5SUM: 6727c039760eb82900fdd4698f66e6ca
+* SHA256SUM: 57d5dd115b5559aaeece77bb1d8209030e800c8a3ba4b4cf8fad69ced8e32b99
 
 実行権限を与えた上、おそらくアイコンをクリックしても実行できないので残念ですがコマンドラインから実行
 してください。
@@ -75,6 +75,12 @@ flatpakとflatpak-builderをインストールしたら下記のコマンドで�
 
 	$ cd ./flatpak
 	$ flatpak-builder --install --user --force-clean build com.github.aharotias2.aho-sweeper.yml
+
+### Flatpakによる実行
+
+    $ flatpak run com.github.aharotias2.aho-sweeper.yml
+
+または、アプリケーションメニューの「ゲーム」から選択してもできるはずです。
 
 ----------------------------------------------------------------------------------------------------
 
