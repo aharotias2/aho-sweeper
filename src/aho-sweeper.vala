@@ -339,6 +339,71 @@ namespace Aho {
         }
     }
 
+    public class SparkDrawer : Drawer {
+        public struct Point {
+            public double initial_x;
+            public double initial_y;
+            public double x;
+            public double y;
+            public double radians;
+            public Gdk.RGBA color;
+        }
+
+        public bool running { get; set; }
+        
+        private double x;
+        private double y;
+        private int num_of_dots;
+        private Point[] dots;
+        private double times;
+        private double radius;
+        private double moving_amount;
+        private double radians_360_degrees;
+        
+        public SparkDrawer(double start_y, double start_x) {
+            this.y = start_y;
+            this.x = start_x;
+            num_of_dots = 10;
+            radius = 0.1;
+            moving_amount = 10.0;
+            radians_360_degrees = Math.PI * 2.0;
+            dots = new Point[num_of_dots];
+            for (int i = 0; i < num_of_dots; i++) {
+                dots[i].initial_x = start_x;
+                dots[i].initial_y = start_y;
+                dots[i].x = start_x;
+                dots[i].y = start_y;
+                dots[i].radians = radians_360_degrees / (double) num_of_dots * (double) i;
+                dots[i].color = { 6.0, 0.4, 0.3, 1.0 };
+            }
+            running = true;
+        }
+        
+        public bool draw(Cairo.Context cairo) {
+            times += 1.0;
+            radius += 0.2;
+            for (int i = 0; i < num_of_dots; i++) {
+                calc_next_position(i);
+                cairo.set_source_rgb(
+                    dots[i].color.red,
+                    dots[i].color.green,
+                    dots[i].color.blue
+                );
+                cairo.arc(dots[i].x, dots[i].y, radius, 0.0, radians_360_degrees);
+                cairo.fill();
+            }
+            if (times > 20) {
+                running = false;
+            }
+            return false;
+        }
+        
+        private void calc_next_position(int i) {
+            dots[i].y = dots[i].initial_y + Math.sin(dots[i].radians) * times;
+            dots[i].x = dots[i].initial_x + Math.cos(dots[i].radians) * times;
+        }
+    }
+    
     public class SweeperWidget : Gtk.DrawingArea {
         public signal void started();
         public signal void win();
@@ -410,7 +475,7 @@ namespace Aho {
         private double bezel_width = 1;
 
         private Gdk.RGBA bomb_color = { 0.0, 0.0, 0.0, 1.0 };
-        private Gdk.RGBA mask_color = { 0.0, 0.0, 0.0, 1.0 };
+        private Gdk.RGBA mask_color = { 0.0, 0.0, 0.0, 0.3 };
         private Gdk.RGBA text_color_1 = { 0.1, 0.1, 0.9, 1.0 };
         private Gdk.RGBA text_color_2 = { 0.1, 0.5, 0.0, 1.0 };
         private Gdk.RGBA text_color_3 = { 0.3, 0.3, 0.0, 1.0 };
@@ -433,6 +498,8 @@ namespace Aho {
         private Gdk.RGBA selected_cell_color = { 1.0, 0.5, 0.2, 1.0 };
         private Gdk.RGBA border_highlight_color = { 1.0, 0.5, 0.2, 1.0 };
 
+        private SparkDrawer? spark_drawer = null;
+        
         public SweeperWidget.with_model(SweeperModel model) {
             this.model = model;
             this.model.started.connect(() => {
@@ -442,6 +509,7 @@ namespace Aho {
                 win();
             });
             this.model.lose.connect(() => {
+                is_paused = true;
                 lose();
             });
             init();
@@ -456,6 +524,7 @@ namespace Aho {
                 win();
             });
             this.model.lose.connect(() => {
+                is_paused = true;
                 lose();
             });
             init();
@@ -493,7 +562,7 @@ namespace Aho {
             width_request = (int) rects[0, model.x_length].x;
             height_request = (int) rects[model.y_length, 0].y;
         }
-
+        
         public override bool draw(Cairo.Context cairo) {
             Cairo.TextExtents extents;
             cairo.set_line_width(0.0);
@@ -763,8 +832,13 @@ namespace Aho {
                     }
                 }
             }
+
+            if (spark_drawer != null && spark_drawer.running) {
+                spark_drawer.draw(cairo);
+            }
+
             if (is_paused) {
-                cairo.set_source_rgba(mask_color.red, mask_color.green, mask_color.blue, 0.5);
+                cairo.set_source_rgba(mask_color.red, mask_color.green, mask_color.blue, mask_color.alpha);
                 cairo.rectangle(
                     0,
                     0,
@@ -797,6 +871,20 @@ namespace Aho {
                     selected_cell.y = cell_y;
                 }
                 model.open_cell(cell_y, cell_x);
+                if (model.has_bomb(cell_y, cell_x)) {
+                    spark_drawer = new SparkDrawer(
+                        rects[cell_y, cell_x].y + cell_width / 2,
+                        rects[cell_y, cell_x].x + cell_width / 2
+                    );
+                    Timeout.add(50, () => {
+                        if (spark_drawer.running) {
+                            queue_draw();
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+                }
             } else {
                 return false;
             }
@@ -974,8 +1062,7 @@ int main(string[] argv) {
                     });
                     sweeper.lose.connect(() => {
                         game_playing = false;
-                        sweeper.is_paused = true;
-                        Timeout.add(500, () => {
+                        Timeout.add(1000, () => {
                             var dialog = new Gtk.MessageDialog(
                                     window, MODAL, INFO, YES_NO, "残念ですが、あなたの負けです!!!!!!!!\n\nしかし、これで全てが終わったわけではありません……\n\nあなたは次こそは必ずや勝利を収めるでしょう!!!!!\n\n諦めなければ、いつかきっと勝てます!!!!\n\n続けてプレイしますか？");
                             dialog.set_default_response(Gtk.ResponseType.YES);
