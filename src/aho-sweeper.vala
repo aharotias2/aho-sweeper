@@ -95,6 +95,11 @@ namespace Aho {
         public abstract bool draw(Cairo.Context cairo);
     }
 
+    public enum Theme {
+        LIGHT,
+        DARK
+    }
+        
     public class SweeperModel : Object {
         public signal void started();
         public signal void win();
@@ -349,29 +354,84 @@ namespace Aho {
                 queue_draw();
             }
         }
+        
+        public Theme theme {
+            get {
+                return theme_value;
+            }
+            set {
+                theme_value = value;
+                switch (theme_value) {
+                  case LIGHT:
+                    border_color = { 0.4, 0.4, 0.4, 1.0 };
+                    closed_cell_color = { 0.95, 0.95, 0.95, 1.0 };
+                    opened_cell_color = { 0.75, 0.75, 0.75, 1.0 };
+                    hovered_cell_color = { 0.9, 0.9, 0.5, 1.0 };
+                    selected_cell_color = { 1.0, 0.5, 0.2, 1.0 };
+                    border_highlight_color = {0.1, 0.1, 0.1, 1.0 };
+                    text_color_1 = { 0.1, 0.1, 0.9, 1.0 };
+                    text_color_2 = { 0.1, 0.5, 0.0, 1.0 };
+                    text_color_3 = { 0.3, 0.3, 0.0, 1.0 };
+                    text_color_4 = { 0.5, 0.5, 0.1, 1.0 };
+                    text_color_5 = { 0.5, 0.5, 0.1, 1.0 };
+                    text_color_6 = { 0.9, 0.1, 0.1, 1.0 };
+                    text_color_7 = { 0.9, 0.1, 0.1, 1.0 };
+                    bezel_width = 1;
+                    cell_width = 20;
+                    border_width = 1;
+                    break;
+                  case DARK:
+                    border_color = { 0.15, 0.15, 0.15, 1.0 };
+                    closed_cell_color = { 0.25, 0.25, 0.25, 1.0 };
+                    opened_cell_color = { 0.1, 0.1, 0.1, 1.0 };
+                    hovered_cell_color = { 0.9, 0.9, 0.5, 1.0 };
+                    selected_cell_color = { 1.0, 0.5, 0.2, 1.0 };
+                    border_highlight_color = {0.5, 0.8, 0.1, 1.0 };
+                    text_color_1 = { 0.6, 0.6, 0.9, 1.0 };
+                    text_color_2 = { 0.4, 0.8, 0.4, 1.0 };
+                    text_color_3 = { 0.8, 0.8, 0.4, 1.0 };
+                    text_color_4 = { 0.8, 0.8, 0.4, 1.0 };
+                    text_color_5 = { 0.6, 0.6, 0.4, 1.0 };
+                    text_color_6 = { 0.9, 0.4, 0.4, 1.0 };
+                    text_color_7 = { 0.9, 0.4, 0.4, 1.0 };
+                    bezel_width = 0;
+                    cell_width = 18;
+                    border_width = 3;
+                    break;
+                }
+                queue_draw();
+            }
+        }
+        
         private SweeperModel model;
-        private const int cell_width = 20;
-        private const double font_size = 12.0;
-        private const int border_width = 1;
-        private const double BEZEL_WIDTH = 1;
-        private const Gdk.RGBA border_color = { 0.6, 0.6, 0.6, 1.0 };
-        private const Gdk.RGBA closed_cell_color = { 0.95, 0.95, 0.95, 1.0 };
-        private const Gdk.RGBA opened_cell_color = { 0.75, 0.75, 0.75, 1.0 };
-        private const Gdk.RGBA hovered_cell_color = { 0.9, 0.9, 0.5, 1.0 };
-        private const Gdk.RGBA selected_cell_color = { 1.0, 0.5, 0.2, 1.0 };
-        private const Gdk.RGBA bomb_color = { 0.0, 0.0, 0.0, 1.0 };
-        private const Gdk.RGBA mask_color = { 0.0, 0.0, 0.0, 1.0 };
-        private const Gdk.RGBA TEXT_COLOR_1 = { 0.1, 0.1, 0.9, 1.0 };
-        private const Gdk.RGBA TEXT_COLOR_2 = { 0.1, 0.5, 0.0, 1.0 };
-        private const Gdk.RGBA TEXT_COLOR_3 = { 0.3, 0.3, 0.0, 1.0 };
-        private const Gdk.RGBA TEXT_COLOR_4 = { 0.5, 0.5, 0.1, 1.0 };
-        private const Gdk.RGBA TEXT_COLOR_5 = { 0.5, 0.5, 0.1, 1.0 };
-        private const Gdk.RGBA TEXT_COLOR_6 = { 0.9, 0.1, 0.1, 1.0 };
-        private const Gdk.RGBA TEXT_COLOR_7 = { 0.9, 0.1, 0.1, 1.0 };
+        private int cell_width = 20;
+        private double font_size = 12.0;
+        private int border_width = 1;
+        private double bezel_width = 1;
+
+        private Gdk.RGBA bomb_color = { 0.0, 0.0, 0.0, 1.0 };
+        private Gdk.RGBA mask_color = { 0.0, 0.0, 0.0, 1.0 };
+        private Gdk.RGBA text_color_1 = { 0.1, 0.1, 0.9, 1.0 };
+        private Gdk.RGBA text_color_2 = { 0.1, 0.5, 0.0, 1.0 };
+        private Gdk.RGBA text_color_3 = { 0.3, 0.3, 0.0, 1.0 };
+        private Gdk.RGBA text_color_4 = { 0.5, 0.5, 0.1, 1.0 };
+        private Gdk.RGBA text_color_5 = { 0.5, 0.5, 0.1, 1.0 };
+        private Gdk.RGBA text_color_6 = { 0.9, 0.1, 0.1, 1.0 };
+        private Gdk.RGBA text_color_7 = { 0.9, 0.1, 0.1, 1.0 };
         private Cairo.Rectangle[,] rects;
         private Gdk.Point selected_cell;
         private Gdk.Point hovered_cell;
+        private double cursor_x;
+        private double cursor_y;
         private bool is_paused_value;
+        private Theme theme_value;
+
+        private Gdk.RGBA border_color = { 0.6, 0.6, 0.6, 1.0 };
+        private Gdk.RGBA closed_cell_color = { 0.95, 0.95, 0.95, 1.0 };
+        private Gdk.RGBA opened_cell_color = { 0.75, 0.75, 0.75, 1.0 };
+        private Gdk.RGBA hovered_cell_color = { 0.9, 0.9, 0.5, 1.0 };
+        private Gdk.RGBA selected_cell_color = { 1.0, 0.5, 0.2, 1.0 };
+        private Gdk.RGBA border_highlight_color = { 1.0, 0.5, 0.2, 1.0 };
 
         public SweeperWidget.with_model(SweeperModel model) {
             this.model = model;
@@ -437,7 +497,15 @@ namespace Aho {
         public override bool draw(Cairo.Context cairo) {
             Cairo.TextExtents extents;
             cairo.set_line_width(0.0);
-            cairo.set_source_rgb(border_color.red, border_color.green, border_color.blue);
+            if (hovered_cell.x >= 0 && hovered_cell.y >= 0) {
+                Cairo.Pattern pattern_bg = new Cairo.Pattern.radial(cursor_x, cursor_y, 0,
+                        cursor_x, cursor_y, cell_width * 6.0);
+                pattern_bg.add_color_stop_rgb(cell_width / 2, border_color.red, border_color.green, border_color.blue);
+                pattern_bg.add_color_stop_rgb(0, border_highlight_color.red, border_highlight_color.green, border_highlight_color.blue);
+                cairo.set_source(pattern_bg);
+            } else {
+                cairo.set_source_rgb(border_color.red, border_color.green, border_color.blue);
+            }
             cairo.rectangle(
                 0,
                 0,
@@ -458,120 +526,127 @@ namespace Aho {
                             fill_color = closed_cell_color;
                         }
 
-                        double center_x = rects[y, x].x + rects[y, x].width / 2;
-                        double center_y = rects[y, x].y + rects[y, x].height / 2;
-                        double top_left_x = rects[y, x].x;
-                        double top_left_y = rects[y, x].y;
-                        double top_right_x = rects[y, x].x + rects[y, x].width;
-                        double top_right_y = rects[y, x].y;
-                        double bottom_left_x = rects[y, x].x;
-                        double bottom_left_y = rects[y, x].y + rects[y, x].height;
-                        double bottom_right_x = rects[y, x].x + rects[y, x].width;
-                        double bottom_right_y = rects[y, x].y + rects[y, x].height;
-                        cairo.set_source_rgb(
-                            fill_color.red * 0.5,
-                            fill_color.green * 0.5,
-                            fill_color.blue * 0.5
-                        );
-                        cairo.move_to(
-                            center_x,
-                            center_y
-                        );
-                        cairo.line_to(
-                            bottom_left_x,
-                            bottom_left_y
-                        );
-                        cairo.line_to(
-                            bottom_right_x,
-                            bottom_right_y
-                        );
-                        cairo.fill();
+                        if (theme == LIGHT) {
+                            double center_x = rects[y, x].x + rects[y, x].width / 2;
+                            double center_y = rects[y, x].y + rects[y, x].height / 2;
+                            double top_left_x = rects[y, x].x;
+                            double top_left_y = rects[y, x].y;
+                            double top_right_x = rects[y, x].x + rects[y, x].width;
+                            double top_right_y = rects[y, x].y;
+                            double bottom_left_x = rects[y, x].x;
+                            double bottom_left_y = rects[y, x].y + rects[y, x].height;
+                            double bottom_right_x = rects[y, x].x + rects[y, x].width;
+                            double bottom_right_y = rects[y, x].y + rects[y, x].height;
+                            cairo.set_source_rgb(
+                                fill_color.red * 0.5,
+                                fill_color.green * 0.5,
+                                fill_color.blue * 0.5
+                            );
+                            cairo.move_to(
+                                center_x,
+                                center_y
+                            );
+                            cairo.line_to(
+                                bottom_left_x,
+                                bottom_left_y
+                            );
+                            cairo.line_to(
+                                bottom_right_x,
+                                bottom_right_y
+                            );
+                            cairo.fill();
 
-                        cairo.set_source_rgb(
-                            fill_color.red * 0.75,
-                            fill_color.green * 0.75,
-                            fill_color.blue * 0.75
-                        );
-                        cairo.move_to(
-                            center_x,
-                            center_y
-                        );
-                        cairo.line_to(
-                            top_right_x,
-                            top_right_y
-                        );
-                        cairo.line_to(
-                            bottom_right_x,
-                            bottom_right_y
-                        );
-                        cairo.fill();
+                            cairo.set_source_rgb(
+                                fill_color.red * 0.75,
+                                fill_color.green * 0.75,
+                                fill_color.blue * 0.75
+                            );
+                            cairo.move_to(
+                                center_x,
+                                center_y
+                            );
+                            cairo.line_to(
+                                top_right_x,
+                                top_right_y
+                            );
+                            cairo.line_to(
+                                bottom_right_x,
+                                bottom_right_y
+                            );
+                            cairo.fill();
 
-                        cairo.set_source_rgb(
-                            fill_color.red * 1.25,
-                            fill_color.green * 1.25,
-                            fill_color.blue * 1.25
-                        );
-                        cairo.move_to(
-                            center_x,
-                            center_y
-                        );
-                        cairo.line_to(
-                            top_left_x,
-                            top_left_y
-                        );
-                        cairo.line_to(
-                            bottom_left_x,
-                            bottom_left_y
-                        );
-                        cairo.fill();
+                            cairo.set_source_rgb(
+                                fill_color.red * 1.25,
+                                fill_color.green * 1.25,
+                                fill_color.blue * 1.25
+                            );
+                            cairo.move_to(
+                                center_x,
+                                center_y
+                            );
+                            cairo.line_to(
+                                top_left_x,
+                                top_left_y
+                            );
+                            cairo.line_to(
+                                bottom_left_x,
+                                bottom_left_y
+                            );
+                            cairo.fill();
 
-                        cairo.set_source_rgb(
-                            fill_color.red * 1.5,
-                            fill_color.green * 1.5,
-                            fill_color.blue * 1.5
-                        );
-                        cairo.move_to(
-                            center_x,
-                            center_y
-                        );
-                        cairo.line_to(
-                            top_left_x,
-                            top_left_y
-                        );
-                        cairo.line_to(
-                            top_right_x,
-                            top_right_y
-                        );
-                        cairo.fill();
+                            cairo.set_source_rgb(
+                                fill_color.red * 1.5,
+                                fill_color.green * 1.5,
+                                fill_color.blue * 1.5
+                            );
+                            cairo.move_to(
+                                center_x,
+                                center_y
+                            );
+                            cairo.line_to(
+                                top_left_x,
+                                top_left_y
+                            );
+                            cairo.line_to(
+                                top_right_x,
+                                top_right_y
+                            );
+                            cairo.fill();
 
-                        var cell_pattern = new Cairo.Pattern.linear(
-                            rects[y, x].x + BEZEL_WIDTH,
-                            rects[y, x].y + BEZEL_WIDTH,
-                            rects[y, x].x + cell_width - BEZEL_WIDTH * 2,
-                            rects[y, x].y + cell_width - BEZEL_WIDTH * 2
-                        );
+                            var cell_pattern = new Cairo.Pattern.linear(
+                                rects[y, x].x + bezel_width,
+                                rects[y, x].y + bezel_width,
+                                rects[y, x].x + cell_width - bezel_width * 2,
+                                rects[y, x].y + cell_width - bezel_width * 2
+                            );
+
+                            cell_pattern.add_color_stop_rgb(
+                                0,
+                                fill_color.red,
+                                fill_color.green,
+                                fill_color.blue
+                            );
+
+                            cell_pattern.add_color_stop_rgb(
+                                rects[y, x].width,
+                                fill_color.red * 0.9,
+                                fill_color.green * 0.9,
+                                fill_color.blue * 0.9
+                            );
+
+                            cairo.set_source(cell_pattern);
+
+                        } else {
+                            
+                            cairo.set_source_rgb(fill_color.red, fill_color.green, fill_color.blue);
+
+                        }
                         
-                        cell_pattern.add_color_stop_rgb(
-                            0,
-                            fill_color.red,
-                            fill_color.green,
-                            fill_color.blue
-                        );
-                        
-                        cell_pattern.add_color_stop_rgb(
-                            rects[y, x].width,
-                            fill_color.red * 0.9,
-                            fill_color.green * 0.9,
-                            fill_color.blue * 0.9
-                        );
-                        
-                        cairo.set_source(cell_pattern);
-
                         cairo.rectangle(
-                            rects[y, x].x + BEZEL_WIDTH,
-                            rects[y, x].y + BEZEL_WIDTH,
-                            cell_width - BEZEL_WIDTH * 2,
-                            cell_width - BEZEL_WIDTH * 2
+                            rects[y, x].x + bezel_width,
+                            rects[y, x].y + bezel_width,
+                            cell_width - bezel_width * 2,
+                            cell_width - bezel_width * 2
                         );
 
                         cairo.fill();
@@ -607,28 +682,28 @@ namespace Aho {
                             if (number > 0) {
                                 cairo.select_font_face("Sans", NORMAL, BOLD);
                                 cairo.set_font_size(font_size);
-                                Gdk.RGBA text_color = TEXT_COLOR_1;
+                                Gdk.RGBA text_color = text_color_1;
                                 switch (number) {
                                   case 1:
-                                    text_color = TEXT_COLOR_1;
+                                    text_color = text_color_1;
                                     break;
                                   case 2:
-                                    text_color = TEXT_COLOR_2;
+                                    text_color = text_color_2;
                                     break;
                                   case 3:
-                                    text_color = TEXT_COLOR_3;
+                                    text_color = text_color_3;
                                     break;
                                   case 4:
-                                    text_color = TEXT_COLOR_4;
+                                    text_color = text_color_4;
                                     break;
                                   case 5:
-                                    text_color = TEXT_COLOR_5;
+                                    text_color = text_color_5;
                                     break;
                                   case 6:
-                                    text_color = TEXT_COLOR_6;
+                                    text_color = text_color_6;
                                     break;
                                   case 7:
-                                    text_color = TEXT_COLOR_7;
+                                    text_color = text_color_7;
                                     break;
                                 }
                                 cairo.set_source_rgb(text_color.red, text_color.green, text_color.blue);
@@ -748,6 +823,8 @@ namespace Aho {
             } else {
                 hovered_cell.x = cell_x;
                 hovered_cell.y = cell_y;
+                cursor_x = event.x;
+                cursor_y = event.y;
             }
             queue_draw();
             return true;
@@ -790,6 +867,28 @@ int main(string[] argv) {
         
         var window = new Gtk.ApplicationWindow(app);
         {
+            var headerbar = new Gtk.HeaderBar();
+            {
+                var theme_switch = new Gtk.Switch();
+                theme_switch.state_set.connect(() => {
+                    if (theme_switch.active) {
+                        sweeper.theme = Aho.Theme.DARK;
+                    } else {
+                        sweeper.theme = Aho.Theme.LIGHT;
+                    }
+                    var gtk_settings = Gtk.Settings.get_default();
+                    if (sweeper.theme == DARK) {
+                        gtk_settings.gtk_application_prefer_dark_theme = true;
+                    } else {
+                        gtk_settings.gtk_application_prefer_dark_theme = false;
+                    }
+                    return true;
+                });
+                
+                headerbar.pack_start(theme_switch);
+                headerbar.show_close_button = true;
+            }
+            
             var box_1 = new Gtk.Box(VERTICAL, SPACING);
             {
                 var box_2 = new Gtk.Box(HORIZONTAL, SPACING);
@@ -898,6 +997,7 @@ int main(string[] argv) {
                 box_1.pack_start(sweeper, false, false);
                 box_1.margin = SPACING;
             }
+            window.set_titlebar(headerbar);
             window.add(box_1);
             window.title = "Let's Sweep!";
         }

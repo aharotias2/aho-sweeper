@@ -5,6 +5,26 @@ Aho-Sweeper
 
 ![画像](etc/screenshot-1.png)
 
+### 3段階の難易度
+#### ビギナー向け
+
+![画像](etc/screenshot-3.png)
+
+#### 中級者向け
+
+![画像](etc/screenshot-1.png)
+
+#### 上級者向け
+
+![画像](etc/screenshot-4.png)
+
+### ダークモード
+ダークモードはじめました。
+
+![画像](etc/screenshot-2.png)
+
+非常に見にくくてイライラに耐えながらやるので難易度が高いという予想外のゲーム性が追加されました。
+
 インストール方法
 ----------------------------------------------------------------------------------------------------
 ### ビルド
@@ -16,7 +36,6 @@ Aho-Sweeper
 
 コンパイル手順は以下になります。
 
-
 1. プロジェクトのルートディレクトリで作業をします。
 
        $ meson --prefix=/usr/local build
@@ -27,15 +46,13 @@ Aho-Sweeper
 
        $ sudo ninja install
 
-
 ### コンパイル済みファイルをダウンロードする
 以下のGoogleドライブのリンクからコンパイル済み実行ファイルをダウンロードできます。
 
-<https://drive.google.com/file/d/1skdtgHI0yT-lY6pimElt39Kpfa4aLp3x/view?usp=sharing>
+<https://drive.google.com/file/d/16VJxWSyXc9MBuM29tx2-cEvAm51hDg48/view?usp=sharing>
 
-
-MD5SUM: 488b31c9bfd5ecaccf676550aea65132
-SHA256SUM: 86be9fdb954594ab3b811cba47a26ef92d07a722c8f3564414cb5ed3df8c32d4
+MD5SUM: 6727c039760eb82900fdd4698f66e6ca
+SHA256SUM: 57d5dd115b5559aaeece77bb1d8209030e800c8a3ba4b4cf8fad69ced8e32b99
 
 実行権限を与えた上、おそらくアイコンをクリックしても実行できないので残念ですがコマンドラインから実行
 してください。
