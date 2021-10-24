@@ -103,7 +103,7 @@ namespace Aho {
     public class SweeperModel : Object {
         public signal void started();
         public signal void win();
-        public signal void lose();
+        public signal void lose(int cell_y, int cell_x);
         
         private ModelSize size;
         private int appearance_rate;
@@ -164,7 +164,11 @@ namespace Aho {
         public void unfix(int y, int x) {
             cells[y, x].is_fixed = false;
         }
-        
+
+        public void close_cell(int y, int x) {
+            cells[y, x].is_closed = true;
+        }
+                
         public bool open_cell(int y, int x) {
             if (!is_playing) {
                 generate_game(y, x);
@@ -173,7 +177,7 @@ namespace Aho {
             }
             bool result = open_cell_recursively(y, x, false);
             if (!result) {
-                lose();
+                lose(y, x);
                 return false;
             } else if (check_is_win()) {
                 win();
@@ -374,7 +378,10 @@ namespace Aho {
                 dots[i].x = start_x;
                 dots[i].y = start_y;
                 dots[i].radians = radians_360_degrees / (double) num_of_dots * (double) i;
-                dots[i].color = { 6.0, 0.4, 0.3, 1.0 };
+                double red = Random.double_range(0.1, 0.9);
+                double green = Random.double_range(0.1, 0.9);
+                double blue = Random.double_range(0.1, 0.9);
+                dots[i].color = { red, green, blue, 1.0 };
             }
             running = true;
         }
@@ -407,7 +414,7 @@ namespace Aho {
     public class SweeperWidget : Gtk.DrawingArea {
         public signal void started();
         public signal void win();
-        public signal void lose();
+        public signal void lose(int cell_y, int cell_x);
         
         public bool is_paused {
             get {
@@ -433,7 +440,7 @@ namespace Aho {
                     opened_cell_color = { 0.75, 0.75, 0.75, 1.0 };
                     hovered_cell_color = { 0.9, 0.9, 0.5, 1.0 };
                     selected_cell_color = { 1.0, 0.5, 0.2, 1.0 };
-                    border_highlight_color = {0.1, 0.1, 0.1, 1.0 };
+                    border_highlight_color = {0.5, 0.8, 0.1, 1.0 };
                     text_color_1 = { 0.1, 0.1, 0.9, 1.0 };
                     text_color_2 = { 0.1, 0.5, 0.0, 1.0 };
                     text_color_3 = { 0.3, 0.3, 0.0, 1.0 };
@@ -501,35 +508,28 @@ namespace Aho {
         private SparkDrawer? spark_drawer = null;
         
         public SweeperWidget.with_model(SweeperModel model) {
-            this.model = model;
-            this.model.started.connect(() => {
-                started();
-            });
-            this.model.win.connect(() => {
-                win();
-            });
-            this.model.lose.connect(() => {
-                is_paused = true;
-                lose();
-            });
-            init();
+            bind_model(model);
         }
 
         public void bind_model(SweeperModel new_model) {
-            this.model = new_model;
-            this.model.started.connect(() => {
+            model = new_model;
+            model.started.connect(() => {
                 started();
             });
-            this.model.win.connect(() => {
+            model.win.connect(() => {
                 win();
             });
-            this.model.lose.connect(() => {
+            model.lose.connect((cell_y, cell_x) => {
                 is_paused = true;
-                lose();
+                lose(cell_y, cell_x);
             });
             init();
         }
 
+        public void recover(int cell_y, int cell_x) {
+            model.close_cell(cell_y, cell_x);
+        }
+        
         private void init() {
             selected_cell = { -1, -1 };
             hovered_cell = { -1, -1 };
@@ -870,8 +870,8 @@ namespace Aho {
                     selected_cell.x = cell_x;
                     selected_cell.y = cell_y;
                 }
-                model.open_cell(cell_y, cell_x);
-                if (model.has_bomb(cell_y, cell_x)) {
+                bool is_safe = model.open_cell(cell_y, cell_x);
+                if (!is_safe) {
                     spark_drawer = new SparkDrawer(
                         rects[cell_y, cell_x].y + cell_width / 2,
                         rects[cell_y, cell_x].x + cell_width / 2
@@ -990,6 +990,9 @@ int main(string[] argv) {
                             if (sweeper != null) {
                                 var size = Aho.ModelSize.from_string(size_selector.active_id);
                                 sweeper.bind_model(new Aho.SweeperModel(size));
+                                playing_time = 0;
+                                time_label.label = time_to_string(playing_time);
+                                game_playing = false;
                                 sweeper.is_paused = false;
                             }
                         });
@@ -1060,14 +1063,20 @@ int main(string[] argv) {
                             return false;
                         });
                     });
-                    sweeper.lose.connect(() => {
+                    sweeper.lose.connect((cell_y, cell_x) => {
                         game_playing = false;
                         Timeout.add(1000, () => {
                             var dialog = new Gtk.MessageDialog(
-                                    window, MODAL, INFO, YES_NO, "残念ですが、あなたの負けです!!!!!!!!\n\nしかし、これで全てが終わったわけではありません……\n\nあなたは次こそは必ずや勝利を収めるでしょう!!!!!\n\n諦めなければ、いつかきっと勝てます!!!!\n\n続けてプレイしますか？");
+                                    window, MODAL, INFO, YES_NO, "残念ですが、あなたの負けです!!!!!!!!\n\nしかし、これで全てが終わったわけではありません……\n\nあなたは次こそは必ずや勝利を収めるでしょう!!!!!\n\n諦めなければ、いつかきっと勝てます!!!!\n\n途中からやり直しますか？");
                             dialog.set_default_response(Gtk.ResponseType.YES);
                             int response_id = dialog.run();
                             if (response_id == Gtk.ResponseType.YES) {
+                                Idle.add(() => {
+                                    sweeper.recover(cell_y, cell_x);
+                                    sweeper.is_paused = false;
+                                    return false;
+                                });
+                            } else {
                                 Idle.add(() => {
                                     var size = Aho.ModelSize.from_string(size_selector.active_id);
                                     sweeper.bind_model(new Aho.SweeperModel(size));
