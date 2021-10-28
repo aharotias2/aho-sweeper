@@ -6,15 +6,15 @@ Aho-Sweeper
 ![画像](etc/screenshot-1.png)
 
 ### 3段階の難易度
-#### ビギナー向け
+#### 凡人向け
 
 ![画像](etc/screenshot-3.png)
 
-#### 中級者向け
+#### 秀才向け
 
 ![画像](etc/screenshot-1.png)
 
-#### 上級者向け
+#### 天才向け
 
 ![画像](etc/screenshot-4.png)
 
@@ -46,16 +46,15 @@ Aho-Sweeper
 
        $ sudo ninja install
 
-### コンパイル済みファイルをダウンロードする
-以下のGoogleドライブのリンクからコンパイル済み実行ファイルをダウンロードできます。
+### 実行可能ファイル (AppImage) をダウンロードする
+以下のGoogleドライブのリンクからAppImage形式の実行ファイルをダウンロードできます。
 
-<https://drive.google.com/file/d/16VJxWSyXc9MBuM29tx2-cEvAm51hDg48/view?usp=sharing>
+<https://drive.google.com/file/d/1t0b-71GozVJDaCHkOvnVnl013sr8iPAx/view?usp=sharing>
 
-* MD5SUM: 6727c039760eb82900fdd4698f66e6ca
-* SHA256SUM: 57d5dd115b5559aaeece77bb1d8209030e800c8a3ba4b4cf8fad69ced8e32b99
+* MD5SUM: 9de2c7790624d8457355953f959f979e
+* SHA256SUM: 3a980381484d88bcf7632675ca061054123a4f92daede50443c53a37fd7019a6
 
-実行権限を与えた上、おそらくアイコンをクリックしても実行できないので残念ですがコマンドラインから実行
-してください。
+実行権限を与えた上、おそらくアイコンをクリックして起動してください。
 
 ### Flatpakでインストールする
 
