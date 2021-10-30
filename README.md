@@ -6,15 +6,15 @@ Aho-Sweeper
 ![画像](etc/screenshot-1.png)
 
 ### 3段階の難易度
-#### 凡人向け
+#### 初心者向け
 
 ![画像](etc/screenshot-3.png)
 
-#### 秀才向け
+#### 経験者向け
 
 ![画像](etc/screenshot-1.png)
 
-#### 天才向け
+#### 熟練者向け
 
 ![画像](etc/screenshot-4.png)
 
